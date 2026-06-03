@@ -8,8 +8,6 @@ import BarExperienceForm from './BarExperienceForm';
 import CourtPracticeForm from './CourtPracticeForm';
 import AdditionalDetailsForm from './AdditionalDetailsForm';
 import AddressDetailsForm from './AddressDetailsForm';
-import JudgementForm from './JudgementForm';
-import DocumentsForm from './DocumentsForm';
 import Button from '../components/Button';
 
 const ApplicationFormStepper = () => {
@@ -18,7 +16,7 @@ const ApplicationFormStepper = () => {
     localStorage.getItem('applicantId') || null
   );
 
-  const totalSteps = 9;
+  const totalSteps = 7;
 
   const handleNext = (newApplicantId = null) => {
     if (newApplicantId) {
@@ -74,10 +72,6 @@ const ApplicationFormStepper = () => {
         return <AdditionalDetailsForm {...commonProps} />;
       case 7:
         return <AddressDetailsForm {...commonProps} />;
-      case 8:
-        return <JudgementForm {...commonProps} />;
-      case 9:
-        return <DocumentsForm {...commonProps} />;
       default:
         return <PersonalDetailsForm {...commonProps} />;
     }

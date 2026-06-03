@@ -1,135 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/Button';
-import Input from '../components/Input';
-import TextArea from '../components/TextArea';
+import GovernmentTable from '../components/GovernmentTable';
 import { getSectionData, saveSectionData } from '../utils/localStorage';
 
 const BarExperienceForm = ({ applicantId, onNext, onPrev }) => {
-  const [formData, setFormData] = useState({
-    enrolmentNumber: '',
-    enrollmentDate: '',
-    yearsOfExperience: '',
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [experiences, setExperiences] = useState([]);
 
   useEffect(() => {
     if (applicantId) {
-      fetchBarExperience();
+      const data = getSectionData(applicantId, 'barExperience') || [];
+      setExperiences(data);
     }
   }, [applicantId]);
 
-  const fetchBarExperience = () => {
-    try {
-      setLoading(true);
-      const data = getSectionData(applicantId, 'barExperience');
-      if (data) {
-        setFormData({
-          enrolmentNumber: data.enrolmentNumber || '',
-          enrollmentDate: data.enrollmentDate || '',
-          yearsOfExperience: data.yearsOfExperience || '',
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching bar experience:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleAddRow = () => {
+    setExperiences([
+      ...experiences,
+      { numberOfYears: '', periodFrom: '', periodTo: '', nameOfBarCouncil: '' }
+    ]);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
+  const handleRowChange = (index, fieldName, value) => {
+    const newRecords = [...experiences];
+    newRecords[index] = {
+      ...newRecords[index],
+      [fieldName]: value,
+    };
+    setExperiences(newRecords);
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.enrolmentNumber.trim()) {
-      newErrors.enrolmentNumber = 'Enrolment number is required';
-    }
-    if (!formData.enrollmentDate) {
-      newErrors.enrollmentDate = 'Enrollment date is required';
-    }
-    if (!formData.yearsOfExperience) {
-      newErrors.yearsOfExperience = 'Years of experience is required';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleDeleteRow = (index) => {
+    const newRecords = experiences.filter((_, i) => i !== index);
+    setExperiences(newRecords);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      saveSectionData(applicantId, 'barExperience', formData);
-      onNext();
-    } catch (error) {
-      alert('Error saving bar experience: ' + error.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleSave = () => {
+    saveSectionData(applicantId, 'barExperience', experiences);
+    onNext();
   };
+
+  const columns = [
+    { name: 'numberOfYears', label: 'Number of Years', type: 'number' },
+    { name: 'periodFrom', label: 'Period From', type: 'date' },
+    { name: 'periodTo', label: 'Period To', type: 'date' },
+    { name: 'nameOfBarCouncil', label: 'Name of Bar Council', type: 'text' },
+  ];
 
   return (
-    <form onSubmit={handleSubmit} className="form-section">
-      <h2 className="text-2xl font-bold mb-6">Bar Experience</h2>
+    <div className="form-section">
+      <h2 className="text-xl font-bold mb-4 bg-gray-200 px-2 py-1 border border-gray-400">Total Bar Experience</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          label="Enrolment Number"
-          name="enrolmentNumber"
-          value={formData.enrolmentNumber}
-          onChange={handleChange}
-          error={errors.enrolmentNumber}
-          required
-          placeholder="Enter enrolment number"
-        />
+      <GovernmentTable
+        columns={columns}
+        data={experiences}
+        onChange={handleRowChange}
+        onAddRow={handleAddRow}
+        onRemoveRow={handleDeleteRow}
+        showSerialNumber={true}
+      />
 
-        <Input
-          label="Enrollment Date"
-          name="enrollmentDate"
-          type="date"
-          value={formData.enrollmentDate}
-          onChange={handleChange}
-          error={errors.enrollmentDate}
-          required
-        />
-
-        <Input
-          label="Years of Experience"
-          name="yearsOfExperience"
-          type="number"
-          value={formData.yearsOfExperience}
-          onChange={handleChange}
-          error={errors.yearsOfExperience}
-          required
-          placeholder="Enter years of experience"
-        />
-      </div>
-
-      <div className="flex gap-4 pt-4 mt-8 border-t">
+      <div className="flex gap-4 pt-4 border-t border-gray-400 no-print mt-6">
         <Button onClick={onPrev} variant="secondary" type="button">
           Previous
         </Button>
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : 'Save & Next'}
+        <Button onClick={handleSave} type="button">
+          Save & Next
         </Button>
       </div>
-    </form>
+    </div>
   );
 };
 

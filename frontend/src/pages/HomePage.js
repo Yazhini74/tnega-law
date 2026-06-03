@@ -44,7 +44,7 @@ const HomePage = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow">
+            <table className="w-full bg-white text-black rounded-lg shadow">
               <thead className="bg-gray-100 border-b">
                 <tr>
                   <th className="p-4 text-left font-semibold">Name</th>
@@ -57,9 +57,9 @@ const HomePage = () => {
               <tbody>
                 {applications.map((app) => (
                   <tr key={app.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 font-semibold">{app.fullName}</td>
-                    <td className="p-4">{app.email}</td>
-                    <td className="p-4">{app.mobile}</td>
+                    <td className="p-4 font-semibold">{app.personalDetails?.advocateName || '-'}</td>
+                    <td className="p-4">{app.personalDetails?.email || '-'}</td>
+                    <td className="p-4">{app.personalDetails?.mobile || '-'}</td>
                     <td className="p-4">{new Date(app.createdAt).toLocaleDateString()}</td>
                     <td className="p-4 flex gap-2">
                       <Link to={`/view-application/${app.id}`}>

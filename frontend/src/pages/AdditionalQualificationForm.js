@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/Button';
-import DynamicTableRow from '../components/DynamicTableRow';
+import GovernmentTable from '../components/GovernmentTable';
 import { getSectionData, saveSectionData } from '../utils/localStorage';
 
 const AdditionalQualificationForm = ({ applicantId, onNext, onPrev }) => {
@@ -16,7 +16,7 @@ const AdditionalQualificationForm = ({ applicantId, onNext, onPrev }) => {
   const handleAddRow = () => {
     setQualifications([
       ...qualifications,
-      { qualification: '', details: '' }
+      { examinationPassed: '', yearOfPassing: '', university: '', institution: '', specialization: '', percentage: '' }
     ]);
   };
 
@@ -39,37 +39,28 @@ const AdditionalQualificationForm = ({ applicantId, onNext, onPrev }) => {
     onNext();
   };
 
-  const fields = [
-    { name: 'qualification', label: 'Qualification', type: 'text' },
-    { name: 'details', label: 'Details', type: 'textarea' },
+  const columns = [
+    { name: 'examinationPassed', label: 'Examination Passed', type: 'text' },
+    { name: 'yearOfPassing', label: 'Year of Passing', type: 'number' },
+    { name: 'university', label: 'University/Board', type: 'text' },
+    { name: 'institution', label: 'Name of Institution', type: 'text' },
+    { name: 'specialization', label: 'Main Subject/Specialization', type: 'text' },
+    { name: 'percentage', label: 'Percentage of Marks', type: 'number' },
   ];
 
   return (
     <div className="form-section">
-      <h2 className="text-2xl font-bold mb-6">Additional Qualifications</h2>
+      <h2 className="text-xl font-bold mb-4 bg-gray-200 px-2 py-1 border border-gray-400">Additional Qualifications</h2>
 
-      {qualifications.length === 0 ? (
-        <p className="text-gray-600 mb-4">No additional qualifications added yet.</p>
-      ) : (
-        qualifications.map((record, index) => (
-          <DynamicTableRow
-            key={index}
-            fields={fields}
-            data={record}
-            onChange={handleRowChange}
-            onDelete={handleDeleteRow}
-            index={index}
-          />
-        ))
-      )}
+      <GovernmentTable
+        columns={columns}
+        data={qualifications}
+        onChange={handleRowChange}
+        onAddRow={handleAddRow}
+        onRemoveRow={handleDeleteRow}
+      />
 
-      <div className="mt-6 mb-6">
-        <Button onClick={handleAddRow} variant="secondary" type="button">
-          + Add Additional Qualification
-        </Button>
-      </div>
-
-      <div className="flex gap-4 pt-4 border-t">
+      <div className="flex gap-4 pt-4 border-t border-gray-400 no-print mt-6">
         <Button onClick={onPrev} variant="secondary" type="button">
           Previous
         </Button>
